@@ -1,0 +1,15 @@
+add_mlir_dialect_library(MLIRCCLDialect
+  CCL.cpp
+
+  ADDITIONAL_HEADER_DIRS
+  ${MLIR_MAIN_INCLUDE_DIR}/mlir/CCL
+
+  DEPENDS
+  MLIRCCLOpsIncGen
+
+  LINK_COMPONENTS
+  Core
+
+  LINK_LIBS PUBLIC
+  MLIRIR
+  )

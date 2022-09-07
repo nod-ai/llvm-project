@@ -1,0 +1,5 @@
+set(LLVM_TARGET_DEFINITIONS CCLOps.td)
+mlir_tablegen(CCLOpsEnums.h.inc -gen-enum-decls)
+mlir_tablegen(CCLOpsEnums.cpp.inc -gen-enum-defs)
+add_mlir_dialect(CCLOps ccl)
+add_mlir_doc(CCLOps CCLOps Dialects/ -gen-dialect-doc)

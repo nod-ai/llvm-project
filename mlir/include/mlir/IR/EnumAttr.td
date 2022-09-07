@@ -39,6 +39,8 @@ class IntEnumAttrCaseBase<I intType, string sym, string strVal, int intVal> :
 
 // Cases of integer enum attributes with a specific type. By default, the string
 // representation is the same as the C++ symbol name.
+class I16EnumAttrCase<string sym, int val, string str = sym>
+    : IntEnumAttrCaseBase<I16, sym, str, val>;
 class I32EnumAttrCase<string sym, int val, string str = sym>
     : IntEnumAttrCaseBase<I32, sym, str, val>;
 class I64EnumAttrCase<string sym, int val, string str = sym>
@@ -231,6 +233,10 @@ class IntEnumAttr<I intType, string name, string summary,
   let parameterPrinter = "$_printer << " # symbolToStringFnName # "($_self)";
 }
 
+class I16EnumAttr<string name, string summary, list<I16EnumAttrCase> cases> :
+    IntEnumAttr<I16, name, summary, cases> {
+  let underlyingType = "uint16_t";
+}
 class I32EnumAttr<string name, string summary, list<I32EnumAttrCase> cases> :
     IntEnumAttr<I32, name, summary, cases> {
   let underlyingType = "uint32_t";
