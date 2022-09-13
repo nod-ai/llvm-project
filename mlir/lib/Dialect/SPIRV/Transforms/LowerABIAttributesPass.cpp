@@ -137,10 +137,15 @@ static LogicalResult lowerEntryPointABIAttr(spirv::FuncOp funcOp,
   // Specifies the spv.ExecutionModeOp.
   auto localSizeAttr = entryPointAttr.getLocalSize();
   if (localSizeAttr) {
+    int placeholderContractionOff;
     auto values = localSizeAttr.getValues<int32_t>();
     SmallVector<int32_t, 3> localSize(values);
     builder.create<spirv::ExecutionModeOp>(
         funcOp.getLoc(), funcOp, spirv::ExecutionMode::LocalSize, localSize);
+    builder.create<spirv::ExecutionModeOp>(
+        funcOp.getLoc(), funcOp, spirv::ExecutionMode::SubgroupSize, 8);
+    builder.create<spirv::ExecutionModeOp>(
+        funcOp.getLoc(), funcOp, spirv::ExecutionMode::ContractionOff, placeholderContractionOff);
     funcOp->removeAttr(entryPointAttrName);
   }
   return success();
