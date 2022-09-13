@@ -25,10 +25,11 @@ def CCL_Dialect : Dialect {
     buffers.
     ```mlir
     %communicator = ccl.com_world : communicator
-    %rank - ccl.rank %communicator : (i64) -> i64
+    %rank = ccl.rank %communicator : (i64) -> i64
     %tensor = tensor.from_elements %rank :  tensor<1xi64>
-    %reduced = ccl.allreduce %tensor, %communicator { reduction_op = "sum" } :
-      (tensor<1xi64>, communicator) -> tensor<1xi64>
+    %in_chain = ccl.create_chain : ccl.chain
+    %reduced, %out_chain = ccl.allreduce %tensor, %communicator, %in_chain
+      { reduction_op = "sum" } : (tensor<1xi64>, communicator) -> tensor<1xi64>
     ```
   }];
 

@@ -13,6 +13,7 @@
 #ifndef MLIR_DIALECT_CCL_IR_CCLOPS
 #define MLIR_DIALECT_CCL_IR_CCLOPS
 
+include "mlir/IR/OpAsmInterface.td"
 include "mlir/Dialect/CCL/IR/CCLTypes.td"
 include "mlir/Dialect/Shape/IR/ShapeBase.td"
 
@@ -36,18 +37,26 @@ def CCL_RankOp : CCL_Op<"rank", []> {
   let assemblyFormat = "operands attr-dict `:` type($result)";
 }
 
+def CCL_CreateChainOp : CCL_Op<"create_chain", []> {
+  let results = (outs CCL_Chain:$result);
+  let assemblyFormat = "operands attr-dict `:` type($result)";
+}
+
 def CCL_Send : CCL_Op<"send", []> {
   let arguments = (
       ins AnyTensor:$tensor,
       CCL_Rank:$destination,
-      CCL_Communicator:$communicator);
+      CCL_Communicator:$communicator,
+      CCL_Chain:$in_chain);
+  let results = (outs CCL_Chain:$out_chain);
 }
 
 def CCL_Recv : CCL_Op<"recv", []> {
   let arguments = (
       ins CCL_Rank:$source,
-      CCL_Communicator:$communicator);
-  let results = (outs AnyTensor:$result);
+      CCL_Communicator:$communicator,
+      CCL_Chain:$in_chain);
+  let results = (outs AnyTensor:$result, CCL_Chain:$out_chain);
 }
 
 def CCL_BcastOp : CCL_Op<"bcast",
@@ -57,8 +66,9 @@ def CCL_BcastOp : CCL_Op<"bcast",
   let arguments = (
       ins AnyTensor:$tensor,
       CCL_Rank:$root,
-      CCL_Communicator:$communicator);
-  let results = (outs AnyTensor:$result);
+      CCL_Communicator:$communicator,
+      CCL_Chain:$in_chain);
+  let results = (outs AnyTensor:$result, CCL_Chain:$out_chain);
 }
 
 def CCL_ReduceOp : CCL_Op<"reduce", []> {
@@ -69,8 +79,9 @@ def CCL_ReduceOp : CCL_Op<"reduce", []> {
       ins AnyTensor:$tensor,
       CCL_Rank:$root,
       CCL_Communicator:$communicator,
+      CCL_Chain:$in_chain,
       DefaultValuedAttr<CCL_OpEnum, "OpEnum::Sum">:$reduction_op);
-  let results = (outs Optional<AnyTensor>: $result);
+  let results = (outs Optional<AnyTensor>: $result, CCL_Chain:$out_chain);
 }
 
 def CCL_AllReduceOp : CCL_Op<"allreduce", [
@@ -80,8 +91,9 @@ def CCL_AllReduceOp : CCL_Op<"allreduce", [
   let arguments = (
       ins AnyTensor:$tensor,
       CCL_Communicator:$communicator,
+      CCL_Chain:$in_chain,
       DefaultValuedAttr<CCL_OpEnum, "OpEnum::Sum">:$reduction_op);
-  let results = (outs AnyTensor:$result);
+  let results = (outs AnyTensor:$result, CCL_Chain:$out_chain);
 }
 
 def CCL_ReduceScatterOp : CCL_Op<"reduce_scatter", []> {
@@ -91,8 +103,9 @@ def CCL_ReduceScatterOp : CCL_Op<"reduce_scatter", []> {
   let arguments = (
       ins AnyTensor:$tensor,
       CCL_Communicator:$communicator,
+      CCL_Chain:$in_chain,
       DefaultValuedAttr<CCL_OpEnum, "OpEnum::Sum">:$reduction_op);
-  let results = (outs AnyTensor:$result);
+  let results = (outs AnyTensor:$result, CCL_Chain:$out_chain);
 }
 
 def CCL_AllGatherOp : CCL_Op<"allgather", []> {
@@ -102,8 +115,9 @@ def CCL_AllGatherOp : CCL_Op<"allgather", []> {
   let arguments = (
       ins AnyTensor:$tensor,
       CCL_Communicator:$communicator,
+      CCL_Chain:$in_chain,
       DefaultValuedAttr<I32Attr, "0">:$dim);
-  let results = (outs AnyTensor:$result);
+  let results = (outs AnyTensor:$result, CCL_Chain:$out_chain);
 }
 
 #endif // MLIR_DIALECT_CCL_IR_CCLOPS

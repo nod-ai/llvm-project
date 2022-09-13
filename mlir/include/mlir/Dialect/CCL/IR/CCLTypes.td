@@ -35,6 +35,10 @@ def CCL_Communicator : CCL_Type<"Communicator", "communicator"> {
   let summary = "Handler to a group of processes that are associated during collective communication.";
 }
 
+def CCL_Chain : CCL_Type<"Chain", "chain"> {
+  let summary = "Used to force order between operations since the communicator is stateful.";
+}
+
 def CCL_Rank : CCL_Type<"Rank", "rank", [
     // TODO: figure out why adding this predicate fails to compile
     //PredTrait<"Is int", CPred<"$_self.isSignedInteger()">>
