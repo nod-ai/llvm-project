@@ -140,7 +140,7 @@ LogicalResult LaunchConfigConversion<SourceOp, builtin>::matchAndRewrite(
   auto spirvBuiltinExt = rewriter.create<spirv::CompositeExtractOp>(
       op.getLoc(), i64Type, spirvBuiltin,
       rewriter.getI32ArrayAttr({static_cast<int32_t>(op.dimension())}));
-  rewriter.replaceOpWithNewOp<spirv::SConvertOp>(
+  rewriter.replaceOpWithNewOp<spirv::UConvertOp>(
       op, indexType, spirvBuiltinExt);
   return success();
 }
