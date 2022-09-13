@@ -455,7 +455,7 @@ LogicalResult IntLoadOpPtrPattern::matchAndRewrite(
     return failure();
 
   auto &typeConverter = *getTypeConverter<SPIRVTypeConverter>();
-  spirv::PtrAccessChainOp accessChainOp =
+  spirv::InBoundsPtrAccessChainOp accessChainOp =
       spirv::getElementPtrDirect(typeConverter, memrefType, adaptor.getMemref(),
                                  adaptor.getIndices(), loc, rewriter);
   if (!accessChainOp)
@@ -630,7 +630,7 @@ LogicalResult IntStoreOpPtrPattern::matchAndRewrite(
 
   auto loc = storeOp.getLoc();
   auto &typeConverter = *getTypeConverter<SPIRVTypeConverter>();
-  spirv::PtrAccessChainOp accessChainOp =
+  spirv::InBoundsPtrAccessChainOp accessChainOp =
       spirv::getElementPtrDirect(typeConverter, memrefType, adaptor.getMemref(),
                                  adaptor.getIndices(), loc, rewriter);
   if (!accessChainOp)

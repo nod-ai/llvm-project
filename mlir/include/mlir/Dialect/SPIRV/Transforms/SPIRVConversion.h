@@ -161,7 +161,7 @@ spirv::AccessChainOp getElementPtr(SPIRVTypeConverter &typeConverter,
                                    ValueRange indices, Location loc,
                                    OpBuilder &builder);
 
-spirv::PtrAccessChainOp getElementPtrDirect(SPIRVTypeConverter &typeConverter,
+spirv::InBoundsPtrAccessChainOp getElementPtrDirect(SPIRVTypeConverter &typeConverter,
                                             MemRefType baseType, Value basePtr,
                                             ValueRange indices, Location loc,
                                             OpBuilder &builder);

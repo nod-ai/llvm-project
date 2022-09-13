@@ -38,8 +38,8 @@ using namespace mlir;
 /// behind the number assignments; we try to follow NVVM conventions and largely
 /// give common storage classes a smaller number.
 #define VULKAN_STORAGE_SPACE_MAP_LIST(MAP_FN)                                  \
-  MAP_FN(spirv::StorageClass::StorageBuffer, 0)                                \
-  MAP_FN(spirv::StorageClass::Generic, 1)                                      \
+  MAP_FN(spirv::StorageClass::StorageBuffer, 1)                                \
+  MAP_FN(spirv::StorageClass::Generic, 0)                                      \
   MAP_FN(spirv::StorageClass::Workgroup, 3)                                    \
   MAP_FN(spirv::StorageClass::Uniform, 4)                                      \
   MAP_FN(spirv::StorageClass::Private, 5)                                      \

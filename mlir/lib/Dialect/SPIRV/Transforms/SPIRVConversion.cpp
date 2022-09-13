@@ -757,7 +757,7 @@ spirv::AccessChainOp mlir::spirv::getElementPtr(
   return builder.create<spirv::AccessChainOp>(loc, basePtr, linearizedIndices);
 }
 
-spirv::PtrAccessChainOp mlir::spirv::getElementPtrDirect(
+spirv::InBoundsPtrAccessChainOp mlir::spirv::getElementPtrDirect(
     SPIRVTypeConverter &typeConverter, MemRefType baseType, Value basePtr,
     ValueRange indices, Location loc, OpBuilder &builder) {
   // Get base and offset of the MemRefType and verify they are static.
@@ -784,7 +784,7 @@ spirv::PtrAccessChainOp mlir::spirv::getElementPtrDirect(
   }
   auto i64Type = builder.getIntegerType(64);
   linearIndex = builder.create<spirv::UConvertOp>(loc, i64Type, linearIndex);
-  return builder.create<spirv::PtrAccessChainOp>(loc, basePtr, linearIndex,
+  return builder.create<spirv::InBoundsPtrAccessChainOp>(loc, basePtr, linearIndex,
                                                  linearizedIndices);
 }
 
