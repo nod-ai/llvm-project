@@ -323,12 +323,12 @@ struct VectorReductionPattern final
         INT_AND_FLOAT_CASE(ADD, IAddOp, FAddOp);
         INT_AND_FLOAT_CASE(MUL, IMulOp, FMulOp);
 
-        INT_OR_FLOAT_CASE(MAXF, GLFMaxOp);
-        INT_OR_FLOAT_CASE(MINF, GLFMinOp);
-        INT_OR_FLOAT_CASE(MINUI, GLUMinOp);
-        INT_OR_FLOAT_CASE(MINSI, GLSMinOp);
-        INT_OR_FLOAT_CASE(MAXUI, GLUMaxOp);
-        INT_OR_FLOAT_CASE(MAXSI, GLSMaxOp);
+        INT_OR_FLOAT_CASE(MAXF, CLFMaxOp);
+        INT_OR_FLOAT_CASE(MINF, CLFMinOp);
+        INT_OR_FLOAT_CASE(MINUI, CLUMinOp);
+        INT_OR_FLOAT_CASE(MINSI, CLSMinOp);
+        INT_OR_FLOAT_CASE(MAXUI, CLUMaxOp);
+        INT_OR_FLOAT_CASE(MAXSI, CLSMaxOp);
 
       case vector::CombiningKind::AND:
       case vector::CombiningKind::OR:
