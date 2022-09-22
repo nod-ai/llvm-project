@@ -5,6 +5,7 @@ add_mlir_dialect_library(MLIRCCLDialect
   ${MLIR_MAIN_INCLUDE_DIR}/mlir/CCL
 
   DEPENDS
+  MLIRCCLInterfacesIncGen
   MLIRCCLOpsIncGen
 
   LINK_COMPONENTS

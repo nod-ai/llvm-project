@@ -1,4 +1,4 @@
-//===- CCLDialect.td - CCL dialect definition --------------*- tablegen -*-===//
+//===- CCLOps.td - CCL dialect definition ------------------*- tablegen -*-===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -14,11 +14,12 @@
 #define MLIR_DIALECT_CCL_IR_CCLOPS
 
 include "mlir/IR/OpAsmInterface.td"
+include "mlir/Dialect/CCL/IR/CCLInterfaces.td"
 include "mlir/Dialect/CCL/IR/CCLTypes.td"
 include "mlir/Dialect/Shape/IR/ShapeBase.td"
 
 class CCL_Op<string mnemonic, list<Trait> traits = []>
-    : Op<CCL_Dialect, mnemonic, traits> {
+    : Op<CCL_Dialect, mnemonic, traits # [CCL_OpInterface]> {
   let assemblyFormat = "operands attr-dict `:` functional-type(operands, results)";
 }
 

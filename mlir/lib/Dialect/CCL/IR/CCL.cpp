@@ -5,6 +5,8 @@
 #include "mlir/IR/OpImplementation.h"
 #include "llvm/ADT/TypeSwitch.h"
 
+#include "mlir/Dialect/CCL/IR/CCLInterfaces.cpp.inc"
+
 #include "mlir/Dialect/CCL/IR/CCLOpsEnums.cpp.inc"
 
 #include "mlir/Dialect/CCL/IR/CCLOpsDialect.cpp.inc"

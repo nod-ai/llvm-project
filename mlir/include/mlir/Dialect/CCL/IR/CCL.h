@@ -14,6 +14,8 @@
 #include "mlir/IR/OpDefinition.h"
 #include "mlir/IR/OpImplementation.h"
 
+#include "mlir/Dialect/CCL/IR/CCLInterfaces.h.inc"
+
 #include "mlir/Dialect/CCL/IR/CCLOpsEnums.h.inc"
 
 #define GET_TYPEDEF_CLASSES
