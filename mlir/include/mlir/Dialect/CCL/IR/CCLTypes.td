@@ -23,14 +23,6 @@ class CCL_Type<string name, string typeMnemonic, list<Trait> traits = []>
   let mnemonic = typeMnemonic;
 }
 
-def CCL_Operation : CCL_Type<"Operation", "operation"> {
-  let summary = "CCL handle to an `mlir::Operation *`";
-  let description = [{
-    This type represents a handle to an instance of an `mlir::Operation *`,
-    bound to a value that is usable within a CCL pattern or rewrite.
-  }];
-}
-
 def CCL_Communicator : CCL_Type<"Communicator", "communicator"> {
   let summary = "Handler to a group of processes that are associated during collective communication.";
 }
