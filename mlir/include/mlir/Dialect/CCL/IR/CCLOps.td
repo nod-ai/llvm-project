@@ -81,7 +81,7 @@ def CCL_ReduceOp : CCL_Op<"reduce", []> {
       CCL_Rank:$root,
       CCL_Communicator:$communicator,
       CCL_Chain:$in_chain,
-      DefaultValuedAttr<CCL_OpEnum, "OpEnum::Sum">:$reduction_op);
+      DefaultValuedAttr<CCL_OpEnum, "OpEnum::SUM">:$reduction_op);
   let results = (outs Optional<AnyTensor>: $result, CCL_Chain:$out_chain);
 }
 
@@ -93,8 +93,9 @@ def CCL_AllReduceOp : CCL_Op<"allreduce", [
       ins AnyTensor:$tensor,
       CCL_Communicator:$communicator,
       CCL_Chain:$in_chain,
-      DefaultValuedAttr<CCL_OpEnum, "OpEnum::Sum">:$reduction_op);
+      DefaultValuedAttr<CCL_OpEnum, "OpEnum::SUM">:$reduction_op);
   let results = (outs AnyTensor:$result, CCL_Chain:$out_chain);
+  let assemblyFormat = "$reduction_op `,` operands attr-dict `:` functional-type(operands, results)";
 }
 
 def CCL_ReduceScatterOp : CCL_Op<"reduce_scatter", []> {
@@ -105,8 +106,9 @@ def CCL_ReduceScatterOp : CCL_Op<"reduce_scatter", []> {
       ins AnyTensor:$tensor,
       CCL_Communicator:$communicator,
       CCL_Chain:$in_chain,
-      DefaultValuedAttr<CCL_OpEnum, "OpEnum::Sum">:$reduction_op);
+      DefaultValuedAttr<CCL_OpEnum, "OpEnum::SUM">:$reduction_op);
   let results = (outs AnyTensor:$result, CCL_Chain:$out_chain);
+  let assemblyFormat = "$reduction_op `,` operands attr-dict `:` functional-type(operands, results)";
 }
 
 def CCL_AllGatherOp : CCL_Op<"allgather", []> {

@@ -33,8 +33,8 @@ def CCL_Chain : CCL_Type<"Chain", "chain"> {
 
 def CCL_Rank : TypeAlias<Index, "Rank within a communicator.">;
 
-def CCL_OpEnumSum : I16EnumAttrCase<"Sum", 0>;
-def CCL_OpEnumProduct : I16EnumAttrCase<"Product", 1>;
+def CCL_OpEnumSum : I16EnumAttrCase<"SUM", 0, "sum">;
+def CCL_OpEnumProduct : I16EnumAttrCase<"PRODUCT", 1, "product">;
 
 def CCL_OpEnum : I16EnumAttr<"OpEnum", "Operation for reductions",
                            [CCL_OpEnumSum, CCL_OpEnumProduct]> {
