@@ -31,12 +31,7 @@ def CCL_Chain : CCL_Type<"Chain", "chain"> {
   let summary = "Used to force order between operations since the communicator is stateful.";
 }
 
-def CCL_Rank : CCL_Type<"Rank", "rank", [
-    // TODO: figure out why adding this predicate fails to compile
-    //PredTrait<"Is int", CPred<"$_self.isSignedInteger()">>
-    ]> {
-  let summary = "Rank within a communicator.";
-}
+def CCL_Rank : TypeAlias<Index, "Rank within a communicator.">;
 
 def CCL_OpEnumSum : I16EnumAttrCase<"Sum", 0>;
 def CCL_OpEnumProduct : I16EnumAttrCase<"Product", 1>;
