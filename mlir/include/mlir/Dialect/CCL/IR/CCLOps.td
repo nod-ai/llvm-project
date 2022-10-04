@@ -23,16 +23,28 @@ class CCL_Op<string mnemonic, list<Trait> traits = []>
   let assemblyFormat = "operands attr-dict `:` functional-type(operands, results)";
 }
 
-def CCL_ComWorldOp : CCL_Op<"com_world", []> {
+def CCL_CommWorldOp : CCL_Op<"comm_world", []> {
   let summary = "Get the global/world communicator.";
-
   let results = (outs CCL_Communicator:$result);
   let assemblyFormat = "attr-dict";
 }
 
+def CCL_CommDupOp : CCL_Op<"comm_dup", []> {
+  let summary = "Clones a communicator.";
+	let arguments = (ins CCL_Communicator:$communicator);
+  let results = (outs CCL_Communicator:$result);
+  let assemblyFormat = "$communicator attr-dict `:` type($result)";
+}
+
+def CCL_CommCreateOp : CCL_Op<"comm_create", []> {
+  let summary = "Create a communicator from a subset of ranks.";
+  let arguments = (ins CCL_Communicator:$communicator,
+      Variadic<CCL_Rank>:$ranks);
+  let results = (outs CCL_Communicator:$result);
+}
+
 def CCL_RankOp : CCL_Op<"rank", []> {
   let summary = "Get the rank of this process.";
-
   let arguments = (ins CCL_Communicator:$communicator);
   let results = (outs CCL_Rank:$result);
   let assemblyFormat = "operands attr-dict `:` type($result)";
@@ -41,6 +53,12 @@ def CCL_RankOp : CCL_Op<"rank", []> {
 def CCL_CreateChainOp : CCL_Op<"create_chain", []> {
   let results = (outs CCL_Chain:$result);
   let assemblyFormat = "operands attr-dict `:` type($result)";
+}
+
+def CCL_MergeChains : CCL_Op<"merge_chains", []> {
+  let arguments = (ins Variadic<CCL_Chain>:$in_chains);
+  let results = (outs CCL_Chain:$out_chain);
+  let assemblyFormat = "$in_chains attr-dict `:` type($out_chain)";
 }
 
 def CCL_Send : CCL_Op<"send", []> {
