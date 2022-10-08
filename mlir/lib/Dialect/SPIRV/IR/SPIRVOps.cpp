@@ -4083,10 +4083,10 @@ static LogicalResult verifyJointMatrixMad(spirv::INTELJointMatrixMadOp op) {
   auto typeB = op.getB().getType().cast<spirv::JointMatrixINTELType>();
   auto typeC = op.getC().getType().cast<spirv::JointMatrixINTELType>();
   auto typeR = op.getResult().getType().cast<spirv::JointMatrixINTELType>();
-  if (typeA.getRows() != typeR.getRows() ||
+  /*if (typeA.getRows() != typeR.getRows() ||
       typeA.getColumns() != typeB.getRows() ||
       typeB.getColumns() != typeR.getColumns())
-    return op.emitOpError("matrix size must match");
+    return op.emitOpError("matrix size must match");*/
   if (typeR.getScope() != typeA.getScope() ||
       typeR.getScope() != typeB.getScope() ||
       typeR.getScope() != typeC.getScope())
