@@ -131,9 +131,10 @@ static LogicalResult lowerEntryPointABIAttr(spirv::FuncOp funcOp,
     return failure();
   }
 
-  spirv::TargetEnvAttr targetEnv = spirv::lookupTargetEnv(funcOp);
+  //spirv::TargetEnvAttr targetEnv = spirv::lookupTargetEnv(funcOp);
+  spirv::TargetEnv targetEnv(spirv::lookupTargetEnv(funcOp));
   FailureOr<spirv::ExecutionModel> executionModel =
-      spirv::getExecutionModel(targetEnv);
+      spirv::getExecutionModel(targetEnv.getAttr());
   if (failed(executionModel))
     return funcOp.emitRemark("lower entry point failure: could not select "
                              "execution model based on 'spirv.target_env'");
@@ -148,11 +149,13 @@ static LogicalResult lowerEntryPointABIAttr(spirv::FuncOp funcOp,
     SmallVector<int32_t, 3> localSize(values);
    builder.create<spirv::ExecutionModeOp>(
         funcOp.getLoc(), funcOp, spirv::ExecutionMode::LocalSize, localSize);
+  if (targetEnv.allows(spirv::Capability::Kernel)){
     builder.create<spirv::ExecutionModeOp>(
         funcOp.getLoc(), funcOp, spirv::ExecutionMode::SubgroupSize, 8);
     builder.create<spirv::ExecutionModeOp>(
         funcOp.getLoc(), funcOp, spirv::ExecutionMode::ContractionOff,  ArrayRef<int32_t>());
     funcOp->removeAttr(entryPointAttrName);
+  }
   }
   return success();
 }
