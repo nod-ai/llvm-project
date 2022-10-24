@@ -43,6 +43,11 @@ def CCL_CommCreateOp : CCL_Op<"comm_create", []> {
   let results = (outs CCL_Communicator:$result);
 }
 
+def CCL_CommDestroyOp : CCL_Op<"comm_destroy", []> {
+  let summary = "Destroy a communicator.";
+  let arguments = (ins CCL_Communicator:$communicator);
+}
+
 def CCL_RankOp : CCL_Op<"rank", []> {
   let summary = "Get the rank of this process.";
   let arguments = (ins CCL_Communicator:$communicator);
@@ -57,75 +62,86 @@ def CCL_CreateChainOp : CCL_Op<"create_chain", []> {
 
 def CCL_MergeChains : CCL_Op<"merge_chains", []> {
   let arguments = (ins Variadic<CCL_Chain>:$in_chains);
-  let results = (outs CCL_Chain:$out_chain);
-  let assemblyFormat = "$in_chains attr-dict `:` type($out_chain)";
+  let results = (outs CCL_Chain:$result_chain);
+  let assemblyFormat = "$in_chains attr-dict `:` type($result_chain)";
 }
 
 def CCL_Send : CCL_Op<"send", []> {
-  let arguments = (
-      ins AnyTensor:$tensor,
+  let arguments = (ins
+      AnyTypeOf<[AnyTensor, AnyMemRef]>:$in_tensor,
       CCL_Rank:$destination,
       CCL_Communicator:$communicator,
       CCL_Chain:$in_chain);
-  let results = (outs CCL_Chain:$out_chain);
+  let results = (outs CCL_Chain:$result_chain);
 }
 
 def CCL_Recv : CCL_Op<"recv", []> {
-  let arguments = (
-      ins CCL_Rank:$source,
+  let arguments = (ins
+      AnyTypeOf<[AnyTensor, AnyMemRef]>:$out_tensor,
+      CCL_Rank:$source,
       CCL_Communicator:$communicator,
       CCL_Chain:$in_chain);
-  let results = (outs AnyTensor:$result, CCL_Chain:$out_chain);
+  let results = (outs
+    AnyTypeOf<[AnyTensor, AnyMemRef]>:$result_tensor,
+    CCL_Chain:$result_chain);
 }
 
 def CCL_BcastOp : CCL_Op<"bcast",
-    [TypesMatchWith<"result type matches type of tensor",
-                    "tensor", "result",
+    [TypesMatchWith<"result_tensor type matches type of io_tensor",
+                    "io_tensor", "result_tensor",
                     "$_self.cast<ShapedType>()">]> {
-  let arguments = (
-      ins AnyTensor:$tensor,
+  let arguments = (ins
+      AnyTypeOf<[AnyTensor, AnyMemRef]>:$io_tensor,
       CCL_Rank:$root,
       CCL_Communicator:$communicator,
       CCL_Chain:$in_chain);
-  let results = (outs AnyTensor:$result, CCL_Chain:$out_chain);
+  let results = (outs
+      AnyTypeOf<[AnyTensor, AnyMemRef]>:$result_tensor,
+      CCL_Chain:$result_chain);
 }
 
 def CCL_ReduceOp : CCL_Op<"reduce", []> {
   let description = [{
     Returns a non-empty optional value only when the current rank = `root`.
   }];
-  let arguments = (
-      ins AnyTensor:$tensor,
+  let arguments = (ins
+      AnyTypeOf<[AnyTensor, AnyMemRef]>:$in_tensor,
+      AnyTypeOf<[AnyTensor, AnyMemRef]>:$out_tensor,
       CCL_Rank:$root,
       CCL_Communicator:$communicator,
       CCL_Chain:$in_chain,
       DefaultValuedAttr<CCL_OpEnum, "OpEnum::SUM">:$reduction_op);
-  let results = (outs Optional<AnyTensor>: $result, CCL_Chain:$out_chain);
+  let results = (outs
+      AnyTypeOf<[AnyTensor, AnyMemRef]>: $result_tensor,
+      CCL_Chain:$result_chain);
 }
 
-def CCL_AllReduceOp : CCL_Op<"allreduce", [
-    TypesMatchWith<"result type matches type of tensor",
-                    "tensor", "result",
+def CCL_AllReduceOp : CCL_Op<"allreduce",
+    [TypesMatchWith<"result_tensor type matches type of out_tensor",
+                    "out_tensor", "result_tensor",
                     "$_self.cast<ShapedType>()">]> {
-  let arguments = (
-      ins AnyTensor:$tensor,
+  let arguments = (ins
+      AnyTypeOf<[AnyTensor, AnyMemRef]>:$in_tensor,
+      AnyTypeOf<[AnyTensor, AnyMemRef]>:$out_tensor,
       CCL_Communicator:$communicator,
       CCL_Chain:$in_chain,
       DefaultValuedAttr<CCL_OpEnum, "OpEnum::SUM">:$reduction_op);
-  let results = (outs AnyTensor:$result, CCL_Chain:$out_chain);
+  let results = (outs
+      AnyTypeOf<[AnyTensor, AnyMemRef]>:$result_tensor,
+      CCL_Chain:$result_chain);
   let assemblyFormat = "$reduction_op `,` operands attr-dict `:` functional-type(operands, results)";
 }
 
 def CCL_ReduceScatterOp : CCL_Op<"reduce_scatter", []> {
-  let description = [{
-    Stacks along a new dimension `dim`, analogous to `numpy.stack`.
-  }];
-  let arguments = (
-      ins AnyTensor:$tensor,
+  let arguments = (ins
+      AnyTypeOf<[AnyTensor, AnyMemRef]>:$in_tensor,
+      AnyTypeOf<[AnyTensor, AnyMemRef]>:$out_tensor,
       CCL_Communicator:$communicator,
       CCL_Chain:$in_chain,
       DefaultValuedAttr<CCL_OpEnum, "OpEnum::SUM">:$reduction_op);
-  let results = (outs AnyTensor:$result, CCL_Chain:$out_chain);
+  let results = (outs
+      AnyTypeOf<[AnyTensor, AnyMemRef]>:$result_tensor,
+      CCL_Chain:$result_chain);
   let assemblyFormat = "$reduction_op `,` operands attr-dict `:` functional-type(operands, results)";
 }
 
@@ -133,12 +149,15 @@ def CCL_AllGatherOp : CCL_Op<"allgather", []> {
   let description = [{
     Stacks along a new dimension `dim`, analogous to `numpy.stack`.
   }];
-  let arguments = (
-      ins AnyTensor:$tensor,
+  let arguments = (ins
+      AnyTypeOf<[AnyTensor, AnyMemRef]>:$in_tensor,
+      AnyTypeOf<[AnyTensor, AnyMemRef]>:$out_tensor,
       CCL_Communicator:$communicator,
       CCL_Chain:$in_chain,
       DefaultValuedAttr<I32Attr, "0">:$dim);
-  let results = (outs AnyTensor:$result, CCL_Chain:$out_chain);
+  let results = (outs
+      AnyTypeOf<[AnyTensor, AnyMemRef]>:$result_tensor,
+      CCL_Chain:$result_chain);
 }
 
 #endif // MLIR_DIALECT_CCL_IR_CCLOPS

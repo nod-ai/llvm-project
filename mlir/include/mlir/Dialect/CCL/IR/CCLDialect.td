@@ -24,12 +24,13 @@ def CCL_Dialect : Dialect {
     This dialect differs from them in that it works with tensors instead of continous
     buffers.
     ```mlir
-    %communicator = ccl.com_world : communicator
-    %rank = ccl.rank %communicator : (i64) -> i64
-    %tensor = tensor.from_elements %rank :  tensor<1xi64>
-    %in_chain = ccl.create_chain : ccl.chain
-    %reduced, %out_chain = ccl.allreduce %tensor, %communicator, %in_chain
-      { reduction_op = "sum" } : (tensor<1xi64>, communicator) -> tensor<1xi64>
+    %communicator = ccl.com_world : !ccl.communicator
+    %rank = ccl.rank %communicator : i64
+    %in_tensor = tensor.from_elements %rank :  tensor<1xi64>
+    %out_tensor = linalg.init_tensor [1] :  tensor<1xi64>
+    %in_chain = ccl.create_chain : !ccl.chain
+    %reduced, %out_chain = ccl.allreduce sum, %in_tensor, %out_tensor, %communicator, %in_chain
+      : (tensor<1xi64>, tensor<1xi64>, !ccl.communicator, !ccl.chain) -> (tensor<1xi64>, !ccl.chain)
     ```
   }];
 
