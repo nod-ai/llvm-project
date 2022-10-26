@@ -25,6 +25,8 @@
 #include "mlir/Dialect/Bufferization/IR/Bufferization.h"
 #include "mlir/Dialect/Bufferization/TransformOps/BufferizationTransformOps.h"
 #include "mlir/Dialect/Bufferization/Transforms/FuncBufferizableOpInterfaceImpl.h"
+#include "mlir/Dialect/CCL/IR/CCL.h"
+#include "mlir/Dialect/CCL/Transforms/BufferizableOpInterfaceImpl.h"
 #include "mlir/Dialect/Complex/IR/Complex.h"
 #include "mlir/Dialect/ControlFlow/IR/ControlFlow.h"
 #include "mlir/Dialect/DLTI/DLTI.h"
@@ -82,6 +84,7 @@ inline void registerAllDialects(DialectRegistry &registry) {
                   arm_neon::ArmNeonDialect,
                   async::AsyncDialect,
                   bufferization::BufferizationDialect,
+                  ccl::CCLDialect,
                   cf::ControlFlowDialect,
                   complex::ComplexDialect,
                   DLTIDialect,
@@ -124,6 +127,7 @@ inline void registerAllDialects(DialectRegistry &registry) {
   arith::registerBufferizableOpInterfaceExternalModels(registry);
   bufferization::func_ext::registerBufferizableOpInterfaceExternalModels(
       registry);
+  ccl::registerBufferizableOpInterfaceExternalModels(registry);
   linalg::registerBufferizableOpInterfaceExternalModels(registry);
   linalg::registerTilingInterfaceExternalModels(registry);
   scf::registerBufferizableOpInterfaceExternalModels(registry);

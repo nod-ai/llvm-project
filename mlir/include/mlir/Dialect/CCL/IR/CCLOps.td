@@ -23,50 +23,50 @@ class CCL_Op<string mnemonic, list<Trait> traits = []>
   let assemblyFormat = "operands attr-dict `:` functional-type(operands, results)";
 }
 
-def CCL_CommWorldOp : CCL_Op<"comm_world", []> {
+def CCL_CommWorldOp : CCL_Op<"comm_world"> {
   let summary = "Get the global/world communicator.";
   let results = (outs CCL_Communicator:$result);
   let assemblyFormat = "attr-dict";
 }
 
-def CCL_CommDupOp : CCL_Op<"comm_dup", []> {
+def CCL_CommDupOp : CCL_Op<"comm_dup"> {
   let summary = "Clones a communicator.";
 	let arguments = (ins CCL_Communicator:$communicator);
   let results = (outs CCL_Communicator:$result);
   let assemblyFormat = "$communicator attr-dict `:` type($result)";
 }
 
-def CCL_CommCreateOp : CCL_Op<"comm_create", []> {
+def CCL_CommCreateOp : CCL_Op<"comm_create"> {
   let summary = "Create a communicator from a subset of ranks.";
   let arguments = (ins CCL_Communicator:$communicator,
       Variadic<CCL_Rank>:$ranks);
   let results = (outs CCL_Communicator:$result);
 }
 
-def CCL_CommDestroyOp : CCL_Op<"comm_destroy", []> {
+def CCL_CommDestroyOp : CCL_Op<"comm_destroy"> {
   let summary = "Destroy a communicator.";
   let arguments = (ins CCL_Communicator:$communicator);
 }
 
-def CCL_RankOp : CCL_Op<"rank", []> {
+def CCL_RankOp : CCL_Op<"rank"> {
   let summary = "Get the rank of this process.";
   let arguments = (ins CCL_Communicator:$communicator);
   let results = (outs CCL_Rank:$result);
   let assemblyFormat = "operands attr-dict `:` type($result)";
 }
 
-def CCL_CreateChainOp : CCL_Op<"create_chain", []> {
+def CCL_CreateChainOp : CCL_Op<"create_chain"> {
   let results = (outs CCL_Chain:$result);
   let assemblyFormat = "operands attr-dict `:` type($result)";
 }
 
-def CCL_MergeChains : CCL_Op<"merge_chains", []> {
+def CCL_MergeChains : CCL_Op<"merge_chains"> {
   let arguments = (ins Variadic<CCL_Chain>:$in_chains);
   let results = (outs CCL_Chain:$result_chain);
   let assemblyFormat = "$in_chains attr-dict `:` type($result_chain)";
 }
 
-def CCL_Send : CCL_Op<"send", []> {
+def CCL_Send : CCL_Op<"send"> {
   let arguments = (ins
       AnyTypeOf<[AnyTensor, AnyMemRef]>:$in_tensor,
       CCL_Rank:$destination,
@@ -75,7 +75,7 @@ def CCL_Send : CCL_Op<"send", []> {
   let results = (outs CCL_Chain:$result_chain);
 }
 
-def CCL_Recv : CCL_Op<"recv", []> {
+def CCL_Recv : CCL_Op<"recv"> {
   let arguments = (ins
       AnyTypeOf<[AnyTensor, AnyMemRef]>:$out_tensor,
       CCL_Rank:$source,
@@ -100,7 +100,7 @@ def CCL_BcastOp : CCL_Op<"bcast",
       CCL_Chain:$result_chain);
 }
 
-def CCL_ReduceOp : CCL_Op<"reduce", []> {
+def CCL_ReduceOp : CCL_Op<"reduce"> {
   let description = [{
     Returns a non-empty optional value only when the current rank = `root`.
   }];
@@ -114,6 +114,7 @@ def CCL_ReduceOp : CCL_Op<"reduce", []> {
   let results = (outs
       AnyTypeOf<[AnyTensor, AnyMemRef]>: $result_tensor,
       CCL_Chain:$result_chain);
+  let assemblyFormat = "$reduction_op `,` operands attr-dict `:` functional-type(operands, results)";
 }
 
 def CCL_AllReduceOp : CCL_Op<"allreduce",
@@ -132,7 +133,7 @@ def CCL_AllReduceOp : CCL_Op<"allreduce",
   let assemblyFormat = "$reduction_op `,` operands attr-dict `:` functional-type(operands, results)";
 }
 
-def CCL_ReduceScatterOp : CCL_Op<"reduce_scatter", []> {
+def CCL_ReduceScatterOp : CCL_Op<"reduce_scatter"> {
   let arguments = (ins
       AnyTypeOf<[AnyTensor, AnyMemRef]>:$in_tensor,
       AnyTypeOf<[AnyTensor, AnyMemRef]>:$out_tensor,
@@ -145,7 +146,7 @@ def CCL_ReduceScatterOp : CCL_Op<"reduce_scatter", []> {
   let assemblyFormat = "$reduction_op `,` operands attr-dict `:` functional-type(operands, results)";
 }
 
-def CCL_AllGatherOp : CCL_Op<"allgather", []> {
+def CCL_AllGatherOp : CCL_Op<"allgather"> {
   let description = [{
     Stacks along a new dimension `dim`, analogous to `numpy.stack`.
   }];
