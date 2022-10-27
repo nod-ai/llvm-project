@@ -9770,6 +9770,7 @@ cc_library(
     hdrs = [
         "include/mlir/Dialect/Bufferization/IR/BufferizableOpInterface.h",
         "include/mlir/Dialect/Bufferization/IR/Bufferization.h",
+        "include/mlir/Dialect/Bufferization/IR/DstBufferizableOpInterfaceImpl.h",
     ],
     includes = ["include"],
     deps = [
@@ -9781,6 +9782,7 @@ cc_library(
         ":BufferizationOpsIncGen",
         ":ControlFlowInterfaces",
         ":CopyOpInterface",
+        ":DestinationStyleOpInterface",
         ":FuncDialect",
         ":IR",
         ":InferTypeOpInterface",
