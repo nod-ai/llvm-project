@@ -60,13 +60,13 @@ def CCL_CreateChainOp : CCL_Op<"create_chain"> {
   let assemblyFormat = "operands attr-dict `:` type($result)";
 }
 
-def CCL_MergeChains : CCL_Op<"merge_chains"> {
+def CCL_MergeChainsOp : CCL_Op<"merge_chains"> {
   let arguments = (ins Variadic<CCL_Chain>:$in_chains);
   let results = (outs CCL_Chain:$result_chain);
   let assemblyFormat = "$in_chains attr-dict `:` type($result_chain)";
 }
 
-def CCL_Send : CCL_Op<"send"> {
+def CCL_SendOp : CCL_Op<"send"> {
   let arguments = (ins
       AnyTypeOf<[AnyTensor, AnyMemRef]>:$in_tensor,
       CCL_Rank:$destination,
@@ -75,7 +75,10 @@ def CCL_Send : CCL_Op<"send"> {
   let results = (outs CCL_Chain:$result_chain);
 }
 
-def CCL_Recv : CCL_Op<"recv"> {
+def CCL_RecvOp : CCL_Op<"recv",
+    [TypesMatchWith<"result_tensor type matches type of out_tensor",
+                    "out_tensor", "result_tensor",
+                    "$_self.cast<ShapedType>()">]> {
   let arguments = (ins
       AnyTypeOf<[AnyTensor, AnyMemRef]>:$out_tensor,
       CCL_Rank:$source,
