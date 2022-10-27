@@ -12,6 +12,7 @@
 include "mlir/Dialect/Tensor/IR/TensorBase.td"
 include "mlir/Interfaces/CastInterfaces.td"
 include "mlir/Interfaces/ControlFlowInterfaces.td"
+include "mlir/Interfaces/DestinationStyleOpInterface.td"
 include "mlir/Interfaces/InferTypeOpInterface.td"
 include "mlir/Interfaces/ParallelCombiningOpInterface.td"
 include "mlir/Interfaces/ShapedOpInterfaces.td"
@@ -681,6 +682,7 @@ def Tensor_GenerateOp : Tensor_Op<"generate", [
 
 def Tensor_InsertOp : Tensor_Op<"insert", [
     DeclareOpInterfaceMethods<OpAsmOpInterface, ["getAsmResultNames"]>,
+    DestinationStyleOpInterface,
     Pure,
     TypesMatchWith<"result type matches type of dest",
                    "dest", "result",
@@ -724,6 +726,12 @@ def Tensor_InsertOp : Tensor_Op<"insert", [
       build($_builder, $_state, resType, scalar, dest, indices);
     }]>];
 
+  let extraClassDeclaration = [{
+    std::pair<int64_t, int64_t> getOutputsPositionRange() {
+      return {1, 2};  // `dest` operand
+    }
+  }];
+
   let hasFolder = 1;
   let hasVerifier = 1;
 }
@@ -736,6 +744,7 @@ def Tensor_InsertSliceOp : Tensor_OpWithOffsetSizesAndStrides<"insert_slice", [
     DeclareOpInterfaceMethods<OpAsmOpInterface, ["getAsmResultNames"]>,
     DeclareOpInterfaceMethods<ReifyRankedShapedTypeOpInterface>,
     AttrSizedOperandSegments, 
+    DestinationStyleOpInterface,
     Pure, 
     OffsetSizeAndStrideOpInterface,
     TypesMatchWith<"expected result type to match dest type",
@@ -862,6 +871,10 @@ def Tensor_InsertSliceOp : Tensor_OpWithOffsetSizesAndStrides<"insert_slice", [
     /// Return the number of leading operands before the `offsets`, `sizes` and
     /// and `strides` operands.
     static unsigned getOffsetSizeAndStrideStartOperandIndex() { return 2; }
+
+    std::pair<int64_t, int64_t> getOutputsPositionRange() {
+      return {1, 2};  // `dest` operand
+    }
   }];
 
   let hasCanonicalizer = 1;
