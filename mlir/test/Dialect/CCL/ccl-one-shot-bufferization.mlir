@@ -32,7 +32,7 @@ func.func @recv(
     %source: index,
     %communicator : !ccl.communicator,
     %chain : !ccl.chain) -> (tensor<?xf32>, !ccl.chain) {
-//      CHECK: %[[result_buff:[A-Za-z0-9_]+]], %[[result_chain:[A-Za-z0-9_]+]] = ccl.recv %[[out_tensor]], %[[destination]], %[[communicator]], %[[chain]]
+//      CHECK: %[[result_buff:[A-Za-z0-9_]+]], %[[result_chain:[A-Za-z0-9_]+]] = ccl.recv %[[out_tensor]], %[[source]], %[[communicator]], %[[chain]]
 // CHECK-SAME: (memref<?xf32, strided<[?], offset: ?>>, index, !ccl.communicator, !ccl.chain) -> (memref<?xf32, strided<[?], offset: ?>>, !ccl.chain)
    %res_tensor, %chain_out = ccl.recv %out_tensor, %source, %communicator, %chain :
        (tensor<?xf32>, index, !ccl.communicator, !ccl.chain) -> (tensor<?xf32>, !ccl.chain)
@@ -44,18 +44,18 @@ func.func @recv(
 
 //      CHECK: func.func @bcast
 // CHECK-SAME: %[[io_tensor:[A-Za-z0-9_]+]]: memref<?xf32, strided<[?], offset: ?>>,
-// CHECK-SAME: %[[source:[A-Za-z0-9_]+]]: index,
+// CHECK-SAME: %[[root:[A-Za-z0-9_]+]]: index,
 // CHECK-SAME: %[[communicator:[A-Za-z0-9_]+]]: !ccl.communicator,
 // CHECK-SAME: %[[chain:[A-Za-z0-9_]+]]: !ccl.chain
 // CHECK-SAME: -> (memref<?xf32, strided<[?], offset: ?>>, !ccl.chain)
 func.func @bcast(
     %io_tensor : tensor<?xf32>,
-    %source: index,
+    %root: index,
     %communicator : !ccl.communicator,
     %chain : !ccl.chain) -> (tensor<?xf32>, !ccl.chain) {
-//      CHECK: %[[result_buff:[A-Za-z0-9_]+]], %[[result_chain:[A-Za-z0-9_]+]] = ccl.bcast %[[io_tensor]], %[[destination]], %[[communicator]], %[[chain]]
+//      CHECK: %[[result_buff:[A-Za-z0-9_]+]], %[[result_chain:[A-Za-z0-9_]+]] = ccl.bcast %[[io_tensor]], %[[root]], %[[communicator]], %[[chain]]
 // CHECK-SAME: (memref<?xf32, strided<[?], offset: ?>>, index, !ccl.communicator, !ccl.chain) -> (memref<?xf32, strided<[?], offset: ?>>, !ccl.chain)
-   %res_tensor, %chain_out = ccl.bcast %io_tensor, %source, %communicator, %chain :
+   %res_tensor, %chain_out = ccl.bcast %io_tensor, %root, %communicator, %chain :
        (tensor<?xf32>, index, !ccl.communicator, !ccl.chain) -> (tensor<?xf32>, !ccl.chain)
 //      CHECK: return %[[result_buff]], %[[result_chain]] : memref<?xf32, strided<[?], offset: ?>>, !ccl.chain
   return %res_tensor, %chain_out : tensor<?xf32>, !ccl.chain

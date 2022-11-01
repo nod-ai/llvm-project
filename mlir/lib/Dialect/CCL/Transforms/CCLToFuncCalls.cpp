@@ -184,15 +184,6 @@ struct UnrankMemrefsConverter : public OpInterfaceRewritePattern<CCLOp> {
 
   void rewrite(CCLOp cclOp, PatternRewriter &rewriter) const final {
     Operation& op = *cclOp.getOperation();
-    // {
-    //   llvm::SmallVector<Value, 6> args = op.getOperands();
-    //   args.erase(args.begin() + 2);
-    //   AllReduceOp newOp = rewriter.replaceOpWithNewOp<AllReduceOp>(&op, op.getResultTypes(), args, op.getAttrs());
-    //   newOp.dump();
-    //   newOp.getOperation()->getParentOp()->dump();
-    //   return;
-    // }
-
     ImplicitLocOpBuilder builder(op.getLoc(), rewriter);
     llvm::SmallVector<Value, 6> unrankedOperands = unrankMemrefs(op.getOperands(), builder);
     llvm::SmallVector<Type, 6> unrankedResultTypes = unrankMemrefTypes(op.getResultTypes());
@@ -210,8 +201,6 @@ struct UnrankMemrefsConverter : public OpInterfaceRewritePattern<CCLOp> {
         newOp->getResults() :
         rankMemrefs(newOp->getResults(), op.getResultTypes(), builder);
     rewriter.replaceOp(&op, newResults);
-    newOp->dump();
-    newOp->getParentOp()->dump();
   }
 };
 
