@@ -11,9 +11,19 @@
 
 include "mlir/Pass/PassBase.td"
 
-def CCLToFuncCalls : InterfacePass<"ccl-to-func-calls", "::mlir::FunctionOpInterface"> {
+def CCLToFuncCalls : Pass<"ccl-to-func-calls"> {
   let summary = "Convert CCL ops to calls to external functions.";
   let constructor = "::mlir::ccl::createCCLToFuncCallsPass()";
+  let options = [
+    Option<"funcNamePrefix", "func-name-prefix", "std::string",
+        /*default=*/"\"ccl_mpi_\"", "Prefix to put at each function name.">,
+  ];
+}
+
+def UnrankMemrefs : Pass<"ccl-unrank-memrefs"> {
+  let summary = "Substitute all operand and result ranked memrefs with unranked memrefs for CCL ops.";
+  let description = [{Inserts memref.cast to make the transformation.}];
+  let constructor = "::mlir::ccl::createUnrankMemrefsPass()";
 }
 
 #endif // MLIR_DIALECT_CCL_TRANSFORMS_PASSES

@@ -9,7 +9,11 @@ add_mlir_dialect_library(MLIRCCLTransforms
   MLIRCCLTransformsIncGen
 
   LINK_LIBS PUBLIC
+  MLIRArithmeticDialect
   MLIRBufferizationDialect
   MLIRCCLDialect
+  MLIRFuncDialect
+  MLIRMemRefDialect
   MLIRPass
+  MLIRSupport
 )
