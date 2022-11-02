@@ -11,7 +11,7 @@
 
 include "mlir/Pass/PassBase.td"
 
-def CCLToFuncCalls : Pass<"ccl-to-func-calls"> {
+def CCLToFuncCalls : Pass<"ccl-to-func-calls", "ModuleOp"> {
   let summary = "Convert CCL ops to calls to external functions.";
   let constructor = "::mlir::ccl::createCCLToFuncCallsPass()";
   let options = [

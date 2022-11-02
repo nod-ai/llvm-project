@@ -27,17 +27,17 @@ namespace ccl {
 #include "mlir/Dialect/CCL/Transforms/Passes.h.inc"
 
 namespace {
-StringAttr funcName(Operation& op, const std::string& prefix) {
+StringAttr functionName(Operation& op, const std::string& prefix) {
   return StringAttr::get(op.getContext(), llvm::Twine(prefix) + op.getName().stripDialect());
 }
 
 template <typename OpTy>
-llvm::SmallVector<Value, 6> funcOperands(OpTy op, PatternRewriter &rewriter) {
+llvm::SmallVector<Value, 6> funcionOperands(OpTy op, PatternRewriter &rewriter) {
   return op.getOperation();
 }
 
 template <>
-llvm::SmallVector<Value, 6> funcOperands<ReduceOp>(ReduceOp op, PatternRewriter &rewriter) {
+llvm::SmallVector<Value, 6> funcionOperands<ReduceOp>(ReduceOp op, PatternRewriter &rewriter) {
   Location loc = op.getLoc();
   OpBuilder builder(op.getContext());
   auto reductionEnumVal = builder.create<arith::ConstantIntOp>(
@@ -45,6 +45,18 @@ llvm::SmallVector<Value, 6> funcOperands<ReduceOp>(ReduceOp op, PatternRewriter 
   llvm::SmallVector<Value, 6> res = op.getOperands();
   res.insert(res.begin() + 3, reductionEnumVal.getResult());
   return res;
+}
+
+void insertFunctionDeclaration(PatternRewriter& rewriter, ModuleOp module,
+    const StringAttr& name, TypeRange operandTypes, TypeRange resultTypes) {
+  if (module.lookupSymbol<func::FuncOp>(name)) {
+    return;
+  }
+
+  PatternRewriter::InsertionGuard insertGuard(rewriter);
+  rewriter.setInsertionPointToStart(module.getBody());
+  auto funcType = FunctionType::get(module.getContext(), operandTypes, resultTypes);
+  rewriter.create<func::FuncOp>(module.getLoc(), name, funcType);
 }
 
 template <typename OpTy>
@@ -68,9 +80,18 @@ struct CCLOpToFuncCallConverter : public OpRewritePattern<OpTy> {
     return success();
   }
   void rewrite(OpTy op, PatternRewriter &rewriter) const final {
-    auto operands = funcOperands(op, rewriter);
+    auto operands = funcionOperands(op, rewriter);
+    auto funcName = functionName(*op.getOperation(), funcNamePrefix);
+
+    llvm::SmallVector<Type, 6> operandTypes;
+    for (const auto& operand: operands) {
+      operandTypes.push_back(operand.getType());
+    }
+    ModuleOp parentModule = op.getOperation()->template getParentOfType<ModuleOp>();
+    insertFunctionDeclaration(rewriter, parentModule, funcName, operandTypes, op.getResultTypes());
+    
     rewriter.replaceOpWithNewOp<func::CallOp>(
-      op.getOperation(), funcName(*op.getOperation(), funcNamePrefix),
+      op.getOperation(), funcName,
       op.getResultTypes(), op.getOperands());
   }
 
